@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Boston Crime Story</title>
+  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+</head>
+<body style="max-width:1000px; margin:auto; font-family:Arial, sans-serif;">
+
+<h1>Shoplifting is Concentrated in District D4 in Boston 2023–Present</h1>
+
+<p>
+While shoplifting is only the sixth most common crime overall in Boston, it is the most frequent crime in District D4. This indicates that shoplifting incidents are not evenly distributed across the city but are highly concentrated in specific areas.
+</p>
+
+<p><b>D4 accounts for about 39% of all shoplifting incidents in this sample.</b></p>
+
+<div id="chart1" style="width:100%;max-width:900px;height:500px;"></div>
+<div id="chart2" style="width:100%;max-width:900px;height:500px;"></div>
+
+<script>
+  // Chart 1: Top crimes in Boston
+  const crimeData = [
+    {"OFFENSE_DESCRIPTION": "INVESTIGATE - PERSON", "count": 3187},
+    {"OFFENSE_DESCRIPTION": "SICK ASSIST", "count": 3024},
+    {"OFFENSE_DESCRIPTION": "M/V - LEAVING SCENE - PROPERTY DAMAGE", "count": 1840},
+    {"OFFENSE_DESCRIPTION": "INVESTIGATE - PROPERTY", "count": 1408},
+    {"OFFENSE_DESCRIPTION": "TOWED - MOTOR - VEHICLE", "count": 1339},
+    {"OFFENSE_DESCRIPTION": "LARCENY - SHOPLIFTING", "count": 1313}
+  ];
+
+  const formattedLabels = crimeData.map(d =>
+    d.OFFENSE_DESCRIPTION.replaceAll(" - ", "<br>")
+  );
+
+  Plotly.newPlot("chart1", [{
+    x: formattedLabels,
+    y: crimeData.map(d => d.count),
+    type: "bar",
+    marker: {
+      color: crimeData.map(d =>
+        d.OFFENSE_DESCRIPTION === "LARCENY - SHOPLIFTING"
+          ? "crimson"
+          : "#1f77b4"
+      )
+    }
+  }], {
+    title: "Top Crime Types in Boston",
+    xaxis: {
+      title: "Crime Type",
+      tickangle: 0,
+      automargin: true
+    },
+    yaxis: {
+      title: "Count",
+      range: [0, 3500],
+    },
+    margin: { b: 120 }
+  });
+
+  // Chart 2: Top crimes in D4
+  const d4CrimeData = [
+    {"OFFENSE_DESCRIPTION": "LARCENY - SHOPLIFTING", "count": 515},
+    {"OFFENSE_DESCRIPTION": "SICK ASSIST", "count": 482},
+    {"OFFENSE_DESCRIPTION": "INVESTIGATE - PERSON", "count": 448},
+    {"OFFENSE_DESCRIPTION": "ASSAULT - SIMPLE", "count": 217},
+    {"OFFENSE_DESCRIPTION": "PROPERTY - LOST/MISSING", "count": 198}
+  ];
+
+  const d4Labels = d4CrimeData.map(d =>
+    d.OFFENSE_DESCRIPTION.replaceAll(" - ", "<br>")
+  );
+
+  Plotly.newPlot("chart2", [{
+    x: d4Labels,
+    y: d4CrimeData.map(d => d.count),
+    type: "bar",
+    marker: {
+      color: d4CrimeData.map(d =>
+        d.OFFENSE_DESCRIPTION === "LARCENY - SHOPLIFTING"
+          ? "crimson"
+          : "#1f77b4"
+      )
+    }
+  }], {
+    title: "Top Crime Types in District D4",
+    xaxis: {
+      title: "Crime Type",
+      tickangle: 0,
+      automargin: true
+    },
+    yaxis: {
+      title: "Count",
+      range: [0, 600],
+    },
+    margin: { b: 120 }
+  });
+</script>
+
+</body>
+</html>
