@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Boston Gentrification and Inequality Dashboard</title>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+
+  <style>
+    :root {
+      --platinum: #EFEFEF;
+      --royal-blue: #3454D1;
+      --turquoise: #34D1BF;
+      --black: #070707;
+      --magenta: #D1345B;
+      --muted: #BFC7D5;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--black);
+      color: var(--platinum);
+    }
+
+    .container {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    .top-strip {
+      height: 7px;
+      width: 100%;
+      background: linear-gradient(90deg, var(--magenta), var(--turquoise), var(--royal-blue));
+    }
+
+    .hero {
+      min-height: 92vh;
+      background:
+        radial-gradient(circle at top left, rgba(52, 209, 191, 0.22), transparent 36%),
+        linear-gradient(180deg, #111111 0%, var(--black) 80%);
+      padding: 56px 8vw;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    h1 {
+      max-width: 1150px;
+      margin: 0;
+      font-size: clamp(46px, 5.7vw, 92px);
+      line-height: 0.98;
+      letter-spacing: -0.045em;
+      font-weight: 900;
+      color: var(--platinum);
+    }
+
+    .subtitle {
+      margin-top: 26px;
+      max-width: 900px;
+      font-size: 20px;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 42px;
+      max-width: 1150px;
+    }
+
+    .stat {
+      background: rgba(52, 209, 191, 0.10);
+      border: 1px solid rgba(52, 209, 191, 0.45);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .stat .num {
+      font-size: 34px;
+      font-weight: 900;
+      color: var(--turquoise);
+      margin-bottom: 6px;
+    }
+
+    .stat .label {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    .story-section {
+      min-height: 100vh;
+      padding: 54px 8vw 72px;
+      background: var(--black);
+      border-top: 1px solid rgba(239, 239, 239, 0.08);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .story-section.alt {
+      background:
+        radial-gradient(circle at top right, rgba(52, 209, 191, 0.14), transparent 34%),
+        #0B0B0B;
+    }
+
+    .section-copy {
+      max-width: 1150px;
+      margin-bottom: 26px;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--magenta);
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .section-copy h2 {
+      margin: 0;
+      max-width: 1150px;
+      font-size: clamp(34px, 4.5vw, 70px);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      font-weight: 900;
+      color: var(--platinum);
+    }
+
+    .section-note {
+      max-width: 940px;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.55;
+    }
+
+    .chart {
+      width: 100%;
+      height: 68vh;
+      min-height: 540px;
+    }
+
+    .chart.short {
+      height: 64vh;
+      min-height: 520px;
+    }
+
+    .sources {
+      max-width: 1000px;
+      margin-top: 42px;
+      padding-top: 30px;
+      border-top: 1px solid rgba(239, 239, 239, 0.18);
+    }
+
+    .sources h3 {
+      margin: 0 0 18px;
+      color: var(--turquoise);
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    .sources ul {
+      margin: 0;
+      padding-left: 22px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    .sources li {
+      margin-bottom: 12px;
+    }
+
+    .sources a {
+      color: var(--turquoise);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .sources a:hover {
+      color: var(--magenta);
+    }
+
+    @media (max-width: 850px) {
+      .hero,
+      .story-section {
+        padding: 40px 22px 56px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .chart,
+      .chart.short {
+        height: 560px;
+      }
+
+      h1 {
+        font-size: 42px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="top-strip"></div>
+
+  <main class="container">
+    <section class="hero">
+      <h1>Boston gentrification created diversity, but affordability inequality grew.</h1>
+
+      <div class="subtitle">
+        Low-income gentrified tracts became more diverse from 1990 to 2016. But housing became less affordable, and 2024 Boston data shows income and education remain uneven across racial and ethnic groups.
+      </div>
+
+      <div class="grid">
+        <div class="stat">
+          <div class="num">13% → 33%</div>
+          <div class="label">Minority share increased in low-income gentrified tracts.</div>
+        </div>
+
+        <div class="stat">
+          <div class="num">4.87 → 5.66</div>
+          <div class="label">Home value-to-income ratio increased, suggesting ownership became less affordable.</div>
+        </div>
+
+        <div class="stat">
+          <div class="num">$58,800</div>
+          <div class="label">Income needed for 2016 rent to stay within the 30% affordability threshold.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="story-section">
+      <div class="section-copy">
+        <p class="eyebrow">Diversity</p>
+        <h2>Diversity increased, but that does not mean equality improved.</h2>
+        <p class="section-note">
+          Low-income gentrified tracts became more racially diverse from 1990 to 2016. The 2024 point is Boston citywide ACS context, not the same tract-level dataset.
+        </p>
+      </div>
+
+      <div id="overallRaceLine" class="chart short"></div>
+    </section>
+
+    <section class="story-section alt">
+      <div class="section-copy">
+        <p class="eyebrow">Housing costs</p>
+        <h2>Home values rose far beyond income, making ownership harder to reach.</h2>
+        <p class="section-note">
+          From 1990 to 2016, median home value rose from $292,000 to $425,000, while median income rose from $59,900 to $75,080.
+        </p>
+      </div>
+
+      <div id="rawValuesLine" class="chart short"></div>
+    </section>
+
+    <section class="story-section">
+      <div class="section-copy">
+        <p class="eyebrow">Affordability</p>
+        <h2>Housing became less affordable relative to income.</h2>
+        <p class="section-note">
+          The home value-to-income ratio increased from 4.87 to 5.66, while annual rent-to-income also rose.
+        </p>
+      </div>
+
+      <div id="affordabilityLine" class="chart short"></div>
+    </section>
+
+    <section class="story-section alt">
+      <div class="section-copy">
+        <p class="eyebrow">Unequal pressure</p>
+        <h2>The same rent or home value is not equally affordable across groups.</h2>
+        <p class="section-note">
+          White and White non-Hispanic residents are closest to the affordability benchmarks, while Black, Hispanic/Latino, Some other race, and Two or more races fall below both thresholds.
+        </p>
+      </div>
+
+      <div id="affordabilityByRaceBar" class="chart"></div>
+    </section>
+
+    <section class="story-section">
+      <div class="section-copy">
+        <p class="eyebrow">Education and income</p>
+        <h2>Education and income move together, but gaps remain.</h2>
+        <p class="section-note">
+          Groups with higher bachelor’s degree attainment tend to have higher mean income, suggesting education is connected to economic opportunity.
+        </p>
+      </div>
+
+      <div id="educationIncomeScatter" class="chart short"></div>
+    </section>
+
+    <section class="story-section alt">
+      <div class="section-copy">
+        <p class="eyebrow">Conclusion</p>
+        <h2>Diversity increased, but equality requires affordability and opportunity.</h2>
+        <p class="section-note">
+          The data suggests that gentrification in Boston’s low-income tracts coincided with greater racial diversity, but that diversity did not automatically create equal outcomes. Housing became less affordable relative to income, and 2024 ACS data shows that income and bachelor’s degree attainment remain uneven across racial and ethnic groups. Because education and income appear closely connected, improving access to higher education, career pathways, and economic opportunity for lower-income minority groups may be one potential way to reduce long-term inequality.
+        </p>
+      </div>
+
+      <div class="sources">
+        <h3>Sources</h3>
+
+        <ul>
+          <li>
+            U.S. Census Bureau. ACS 1-Year Estimates Subject Table S1902, 2024: Income by Race/Ethnicity.
+            <a href="https://data.census.gov/table/ACSST1Y2024.S1902?q=acs&t=Income+and+Poverty&g=040XX00US25_1500000US250250001001,250250001002,250250001003_160XX00US2507000&y=2024" target="_blank">
+              View source
+            </a>
+          </li>
+
+          <li>
+            U.S. Census Bureau. ACS 1-Year Estimates Subject Table S1501, 2024: Educational Attainment by Race/Ethnicity.
+            <a href="https://data.census.gov/table/ACSST1Y2024.S1501?q=education+and+ethnicity&g=040XX00US25_160XX00US2507000&y=2024" target="_blank">
+              View source
+            </a>
+          </li>
+
+          <li>
+            Joint Center for Housing Studies of Harvard University. <em>Mapping Neighborhood Change in Boston</em>, January 2019.
+            <a href="https://www.jchs.harvard.edu/sites/default/files/Harvard_JCHS_mapping_neighborhood_change_boston_january_2019.pdf" target="_blank">
+              View source
+            </a>
+          </li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const platinum = "#EFEFEF";
+    const royalBlue = "#3454D1";
+    const turquoise = "#34D1BF";
+    const black = "#070707";
+    const magenta = "#D1345B";
+    const muted = "#BFC7D5";
+    const gridColor = "rgba(239,239,239,0.12)";
+    const zeroColor = "rgba(239,239,239,0.38)";
+
+    const baseLayout = {
+      paper_bgcolor: black,
+      plot_bgcolor: black,
+      margin: { t: 70, r: 60, b: 110, l: 90 },
+      font: {
+        family: "Arial, Helvetica, sans-serif",
+        size: 15,
+        color: platinum
+      },
+      hoverlabel: {
+        bgcolor: "#111111",
+        bordercolor: turquoise,
+        font: { color: platinum }
+      },
+      legend: {
+        orientation: "h",
+        x: 0,
+        y: -0.24,
+        font: { color: platinum }
+      }
+    };
+
+    const config = {
+      responsive: true,
+      displayModeBar: false,
+      displaylogo: false
+    };
+
+    const darkXAxis = {
+      gridcolor: gridColor,
+      zerolinecolor: zeroColor,
+      color: platinum,
+      titlefont: { color: platinum },
+      tickfont: { color: platinum }
+    };
+
+    const darkYAxis = {
+      gridcolor: gridColor,
+      zerolinecolor: zeroColor,
+      color: platinum,
+      titlefont: { color: platinum },
+      tickfont: { color: platinum }
+    };
+
+    const years = [1990, 2016];
+
+    const medianRent = [1080, 1470];
+    const medianIncome = [59900, 75080];
+    const medianHomeValue = [292000, 425000];
+
+    const homeValueToIncome = [
+      medianHomeValue[0] / medianIncome[0],
+      medianHomeValue[1] / medianIncome[1]
+    ];
+
+    const annualRentToIncome = [
+      (medianRent[0] * 12) / medianIncome[0],
+      (medianRent[1] * 12) / medianIncome[1]
+    ];
+
+    const diversityContexts = [
+      "Gentrified tracts<br>1990",
+      "Gentrified tracts<br>2016",
+      "Boston citywide ACS<br>2024 context"
+    ];
+
+    const whiteShare = [87, 67, 44.1];
+    const minorityShare = [13, 33, 55.9];
+
+    Plotly.newPlot("overallRaceLine", [
+      {
+        type: "scatter",
+        mode: "lines+markers+text",
+        name: "White Share",
+        line: { color: royalBlue, width: 4 },
+        marker: {
+          color: royalBlue,
+          size: [10, 10, 14],
+          symbol: ["circle", "circle", "diamond"]
+        },
+        x: diversityContexts,
+        y: whiteShare,
+        text: ["87%", "67%", "44.1%"],
+        textposition: "top center",
+        hovertemplate:
+          "<b>%{x}</b><br>" +
+          "White share: %{y}%<extra></extra>"
+      },
+      {
+        type: "scatter",
+        mode: "lines+markers+text",
+        name: "Minority / Non-White or Hispanic Share",
+        line: { color: turquoise, width: 4 },
+        marker: {
+          color: turquoise,
+          size: [10, 10, 14],
+          symbol: ["circle", "circle", "diamond"]
+        },
+        x: diversityContexts,
+        y: minorityShare,
+        text: ["13%", "33%", "55.9%"],
+        textposition: "top center",
+        hovertemplate:
+          "<b>%{x}</b><br>" +
+          "Minority / non-White or Hispanic share: %{y}%<extra></extra>"
+      }
+    ], {
+      ...baseLayout,
+      title: {
+        text: "Diversity Increased in Gentrified Tracts; 2024 Boston Context Shows a Similar Pattern",
+        x: 0.02,
+        xanchor: "left",
+        font: { size: 26, color: platinum }
+      },
+      xaxis: {
+        ...darkXAxis,
+        title: "",
+        type: "category"
+      },
+      yaxis: {
+        ...darkYAxis,
+        title: "Share of Population (%)",
+        range: [0, 100]
+      },
+      annotations: [
+        {
+          x: "Boston citywide ACS<br>2024 context",
+          y: 94,
+          text: "2024 is citywide context,<br>not the same tract dataset",
+          showarrow: false,
+          font: { size: 12, color: muted },
+          align: "center"
+        }
+      ]
+    }, config);
+
+    Plotly.newPlot("rawValuesLine", [
+      {
+        type: "scatter",
+        mode: "lines+markers+text",
+        name: "Median Rent",
+        line: { color: turquoise, width: 4 },
+        marker: { color: turquoise, size: 10 },
+        x: years,
+        y: medianRent,
+        text: medianRent.map(v => `$${v.toLocaleString()}`),
+        textposition: "top center",
+        hovertemplate: "Median rent: $%{y:,.0f}<extra></extra>"
+      },
+      {
+        type: "scatter",
+        mode: "lines+markers+text",
+        name: "Median Income",
+        line: { color: magenta, width: 4 },
+        marker: { color: magenta, size: 10 },
+        x: years,
+        y: medianIncome,
+        text: medianIncome.map(v => `$${v.toLocaleString()}`),
+        textposition: "top center",
+        hovertemplate: "Median income: $%{y:,.0f}<extra></extra>"
+      },
+      {
+        type: "scatter",
+        mode: "lines+markers+text",
+        name: "Median Home Value",
+        line: { color: royalBlue, width: 4 },
+        marker: { color: royalBlue, size: 10 },
+        x: years,
+        y: medianHomeValue,
+        text: medianHomeValue.map(v => `$${v.toLocaleString()}`),
+        textposition: "top center",
+        hovertemplate: "Median home value: $%{y:,.0f}<extra></extra>"
+      }
+    ], {
+      ...baseLayout,
+      title: {
+        text: "Raw Change in Low-Income Gentrified Tracts, 1990–2016",
+        x: 0.02,
+        xanchor: "left",
+        font: { size: 26, color: platinum }
+      },
+      xaxis: {
+        ...darkXAxis,
+        title: "Year",
+        tickmode: "array",
+        tickvals: years
+      },
+      yaxis: {
+        ...darkYAxis,
+        title: "Dollars",
+        tickprefix: "$",
+        separatethousands: true
+      }
+    }, config);
+
+    Plotly.newPlot("affordabilityLine", [
+      {
+        type: "scatter",
+        mode: "lines+markers+text",
+        name: "Home Value / Income",
+        line: { color: royalBlue, width: 4 },
+        marker: { color: royalBlue, size: 10 },
+        x: years,
+        y: homeValueToIncome,
+        text: homeValueToIncome.map(v => v.toFixed(2)),
+        textposition: "top center",
+        hovertemplate: "Home Value / Income: %{y:.2f}<extra></extra>"
+      },
+      {
+        type: "scatter",
+        mode: "lines+markers+text",
+        name: "Annual Rent / Income",
+        line: { color: magenta, width: 4 },
+        marker: { color: magenta, size: 10 },
+        x: years,
+        y: annualRentToIncome,
+        text: annualRentToIncome.map(v => v.toFixed(3)),
+        textposition: "bottom center",
+        hovertemplate: "Annual Rent / Income: %{y:.3f}<extra></extra>"
+      }
+    ], {
+      ...baseLayout,
+      title: {
+        text: "Affordability Ratios in Low-Income Gentrified Tracts, 1990–2016",
+        x: 0.02,
+        xanchor: "left",
+        font: { size: 26, color: platinum }
+      },
+      xaxis: {
+        ...darkXAxis,
+        title: "Year",
+        tickmode: "array",
+        tickvals: years
+      },
+      yaxis: {
+        ...darkYAxis,
+        title: "Ratio"
+      }
+    }, config);
+
+    const affordabilityIncomeData = [
+      { race: "White non-Hispanic", mean: 89252 },
+      { race: "White", mean: 87062 },
+      { race: "Asian", mean: 56452 },
+      { race: "Two or more races", mean: 37266 },
+      { race: "Black", mean: 32877 },
+      { race: "Hispanic/Latino", mean: 31632 },
+      { race: "Some other race", mean: 28618 }
+    ];
+
+    const annualRent2016 = medianRent[1] * 12;
+    const incomeNeededForRent = annualRent2016 / 0.30;
+    const incomeNeededForHome = medianHomeValue[1] / homeValueToIncome[0];
+
+    Plotly.newPlot("affordabilityByRaceBar", [
+      {
+        type: "bar",
+        orientation: "h",
+        name: "Mean Income",
+        y: affordabilityIncomeData.map(d => d.race).reverse(),
+        x: affordabilityIncomeData.map(d => d.mean).reverse(),
+        marker: { color: turquoise },
+        text: affordabilityIncomeData.map(d => `$${d.mean.toLocaleString()}`).reverse(),
+        textposition: "outside",
+        customdata: affordabilityIncomeData.map(d => {
+          const rentAffordable = d.mean >= incomeNeededForRent
+            ? "Above rent affordability threshold"
+            : "Below rent affordability threshold";
+
+          const homeAffordable = d.mean >= incomeNeededForHome
+            ? "Above home-value benchmark"
+            : "Below home-value benchmark";
+
+          return [rentAffordable, homeAffordable];
+        }).reverse(),
+        hovertemplate:
+          "<b>%{y}</b><br>" +
+          "Mean income: $%{x:,.0f}<br>" +
+          "%{customdata[0]}<br>" +
+          "%{customdata[1]}" +
+          "<extra></extra>"
+      }
+    ], {
+      ...baseLayout,
+      title: {
+        text: "Who Can Afford the Same Rent or Home Value?",
+        x: 0.02,
+        xanchor: "left",
+        font: { size: 26, color: platinum }
+      },
+      xaxis: {
+        ...darkXAxis,
+        title: "Mean Income Compared with Affordability Thresholds",
+        tickprefix: "$",
+        separatethousands: true,
+        range: [0, 105000]
+      },
+      yaxis: {
+        ...darkYAxis,
+        title: "",
+        automargin: true
+      },
+      margin: {
+        t: 90,
+        r: 150,
+        b: 100,
+        l: 190
+      },
+      shapes: [
+        {
+          type: "line",
+          x0: incomeNeededForRent,
+          x1: incomeNeededForRent,
+          y0: 0,
+          y1: 1,
+          xref: "x",
+          yref: "paper",
+          line: {
+            color: magenta,
+            width: 4,
+            dash: "dash"
+          }
+        },
+        {
+          type: "line",
+          x0: incomeNeededForHome,
+          x1: incomeNeededForHome,
+          y0: 0,
+          y1: 1,
+          xref: "x",
+          yref: "paper",
+          line: {
+            color: royalBlue,
+            width: 4,
+            dash: "dash"
+          }
+        }
+      ],
+      annotations: [
+        {
+          x: incomeNeededForRent,
+          y: 1.08,
+          xref: "x",
+          yref: "paper",
+          text: "Rent affordable income<br>$58,800",
+          showarrow: false,
+          font: { color: magenta, size: 13 },
+          align: "center"
+        },
+        {
+          x: incomeNeededForHome,
+          y: 1.08,
+          xref: "x",
+          yref: "paper",
+          text: "Home-value benchmark<br>$87,200",
+          showarrow: false,
+          font: { color: royalBlue, size: 13 },
+          align: "center"
+        }
+      ],
+      showlegend: false
+    }, config);
+
+    const eduRows = [
+      "White",
+      "Black or African American",
+      "Asian",
+      "Some other race",
+      "Two or more races",
+      "Hispanic or Latino origin (of any race)",
+      "White alone, not Hispanic or Latino"
+    ];
+
+    const popShare = [46.1, 19.5, 10.8, 6.3, 16.8, 20.7, 44.1];
+    const bachelors = [76.6, 26.0, 59.6, 23.5, 35.9, 29.3, 77.2];
+
+    const incomeByRace = {
+      "White": 87062,
+      "Black or African American": 32877,
+      "Asian": 56452,
+      "Some other race": 28618,
+      "Two or more races": 37266,
+      "Hispanic or Latino origin (of any race)": 31632,
+      "White alone, not Hispanic or Latino": 89252
+    };
+
+    const scatterData = eduRows.map((race, i) => ({
+      race: race,
+      bachelors: bachelors[i],
+      income: incomeByRace[race],
+      popShare: popShare[i]
+    }));
+
+    const xVals = scatterData.map(d => d.bachelors);
+    const yVals = scatterData.map(d => d.income);
+
+    const xMean = xVals.reduce((a, b) => a + b, 0) / xVals.length;
+    const yMean = yVals.reduce((a, b) => a + b, 0) / yVals.length;
+
+    const numerator = xVals.reduce((sum, x, i) => {
+      return sum + (x - xMean) * (yVals[i] - yMean);
+    }, 0);
+
+    const denominator = xVals.reduce((sum, x) => {
+      return sum + Math.pow(x - xMean, 2);
+    }, 0);
+
+    const slope = numerator / denominator;
+    const intercept = yMean - slope * xMean;
+
+    const trendX = [20, 80];
+    const trendY = trendX.map(x => intercept + slope * x);
+
+    Plotly.newPlot("educationIncomeScatter", [
+      {
+        type: "scatter",
+        mode: "markers+text",
+        name: "Race / Ethnicity",
+        x: scatterData.map(d => d.bachelors),
+        y: scatterData.map(d => d.income),
+        text: scatterData.map(d => {
+          if (d.race === "Black or African American") return "Black";
+          if (d.race === "Hispanic or Latino origin (of any race)") return "Hispanic/Latino";
+          if (d.race === "White alone, not Hispanic or Latino") return "White non-Hispanic";
+          return d.race;
+        }),
+        textposition: scatterData.map(d => {
+          if (d.race === "White") return "top right";
+          if (d.race === "White alone, not Hispanic or Latino") return "top left";
+          if (d.race === "Asian") return "top left";
+          if (d.race === "Two or more races") return "top right";
+          if (d.race === "Black or African American") return "top center";
+          if (d.race === "Hispanic or Latino origin (of any race)") return "bottom right";
+          if (d.race === "Some other race") return "top left";
+          return "top center";
+        }),
+        marker: {
+          size: scatterData.map(d => Math.max(14, d.popShare * 1.05)),
+          color: turquoise,
+          opacity: 0.82,
+          line: {
+            color: platinum,
+            width: 1
+          }
+        },
+        customdata: scatterData.map(d => [d.race, d.popShare]),
+        hovertemplate:
+          "<b>%{customdata[0]}</b><br>" +
+          "Bachelor's degree or higher: %{x:.1f}%<br>" +
+          "Mean income: $%{y:,.0f}<br>" +
+          "Population share: %{customdata[1]:.1f}%" +
+          "<extra></extra>"
+      },
+      {
+        type: "scatter",
+        mode: "lines",
+        name: "Trend line",
+        x: trendX,
+        y: trendY,
+        line: {
+          color: magenta,
+          width: 4,
+          dash: "dash"
+        },
+        hovertemplate: "Trend line<extra></extra>"
+      }
+    ], {
+      ...baseLayout,
+      title: {
+        text: "Education and Income Move Together, But Gaps Remain",
+        x: 0.02,
+        xanchor: "left",
+        font: { size: 26, color: platinum }
+      },
+      xaxis: {
+        ...darkXAxis,
+        title: "Bachelor's Degree or Higher (%)",
+        ticksuffix: "%",
+        range: [15, 85]
+      },
+      yaxis: {
+        ...darkYAxis,
+        title: "Mean Income (Dollars)",
+        tickprefix: "$",
+        separatethousands: true,
+        range: [20000, 100000]
+      },
+      margin: {
+        t: 80,
+        r: 60,
+        b: 110,
+        l: 100
+      },
+      legend: {
+        orientation: "h",
+        x: 0,
+        y: -0.24,
+        font: { color: platinum }
+      }
+    }, config);
+  </script>
+</body>
+</html>
