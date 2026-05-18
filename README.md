@@ -6,7 +6,7 @@ Core message: **Diversity increased, but equality did not automatically improve.
 
 ## Live Website
 
-[View Project Website](YOUR-LIVE-WEBSITE-LINK-HERE)
+[View Project Website](https://alextk88.github.io/cs480-617/)
 
 ## What This Project Analyzes
 
